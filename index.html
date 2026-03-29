@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wombats! PBS Kids</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2e7d32">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Wombats!">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#1b5e20;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;}
+
+    /* ── Header ── */
+    header{background:#2e7d32;padding:12px 16px;box-shadow:0 4px 12px rgba(0,0,0,.35);
+      position:sticky;top:0;z-index:50;}
+    .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    header h1{font-size:2rem;color:#ffd600;font-weight:900;letter-spacing:2px;
+      text-shadow:2px 2px 0 #1b5e20;flex:1;text-align:center;}
+    #back-btn{background:none;border:none;color:#a5d6a7;font-size:.9rem;cursor:pointer;
+      display:none;align-items:center;gap:4px;padding:4px 8px;white-space:nowrap;}
+    #back-btn:hover{color:#ffd600;}
+    #dl-tab{background:#ffd600;border:none;border-radius:10px;padding:7px 11px;
+      font-size:.82rem;font-weight:800;color:#1b5e20;cursor:pointer;
+      display:flex;align-items:center;gap:5px;white-space:nowrap;}
+    #dl-tab:hover{background:#ffea00;}
+    #dl-badge{background:#e53935;color:#fff;border-radius:50%;width:18px;height:18px;
+      font-size:.7rem;display:none;align-items:center;justify-content:center;font-weight:900;}
+
+    /* ── Season tabs ── */
+    .season-tabs{display:flex;gap:6px;margin-bottom:10px;}
+    .s-tab{flex:1;background:rgba(255,255,255,.12);border:none;border-radius:10px;
+      padding:8px;color:#a5d6a7;font-size:.9rem;font-weight:700;cursor:pointer;transition:.15s;}
+    .s-tab.active{background:#ffd600;color:#1b5e20;}
+    .s-tab:hover:not(.active){background:rgba(255,255,255,.2);color:#fff;}
+
+    /* ── Search bar ── */
+    .search-wrap{position:relative;}
+    #search{width:100%;padding:9px 36px 9px 14px;border-radius:10px;border:none;
+      font-size:.95rem;background:rgba(255,255,255,.92);color:#333;outline:none;}
+    #search::placeholder{color:#888;}
+    .search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+      background:none;border:none;font-size:1rem;color:#888;cursor:pointer;display:none;}
+
+    /* ── Pages ── */
+    .page{display:none;padding:14px;} .page.active{display:block;animation:fi .2s ease;}
+    @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* ── Grid ── */
+    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+    .card{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.35);
+      transition:transform .15s,box-shadow .15s;}
+    .card:not(.unavailable):hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.45);}
+    .card.unavailable{opacity:.6;}
+    .card-art{height:120px;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:3px;position:relative;}
+    .ep-badge{font-size:.68rem;font-weight:800;color:rgba(255,255,255,.8);letter-spacing:1px;}
+    .ep-emoji{font-size:2.8rem;}
+    .card-body{padding:9px 11px 11px;background:rgba(0,0,0,.28);}
+    .card-title{color:#fff;font-size:.85rem;font-weight:700;line-height:1.3;min-height:34px;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .unavail-label{color:#ffcc80;font-size:.75rem;margin-top:5px;}
+    .card-actions{display:flex;gap:6px;margin-top:8px;}
+    .btn-watch{flex:1;background:#ffd600;border:none;border-radius:8px;padding:7px;
+      font-size:.82rem;font-weight:800;color:#1b5e20;cursor:pointer;}
+    .btn-watch:hover{background:#ffea00;}
+    .btn-pbs{flex:1;background:rgba(100,181,246,.25);border:none;border-radius:8px;padding:7px;
+      font-size:.78rem;font-weight:700;color:#90caf9;cursor:pointer;}
+    .btn-pbs:hover{background:rgba(100,181,246,.4);}
+    .btn-dl{width:34px;height:34px;border:none;border-radius:8px;background:rgba(255,255,255,.15);
+      color:#fff;font-size:.95rem;cursor:pointer;display:flex;align-items:center;
+      justify-content:center;flex-shrink:0;transition:.15s;}
+    .btn-dl:hover{background:rgba(255,255,255,.3);}
+    .btn-dl.saved{background:#43a047;}
+    .s2-badge{position:absolute;top:6px;right:6px;background:#1565c0;color:#fff;
+      font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:5px;}
+    #no-results{text-align:center;color:#a5d6a7;padding:40px;font-size:1rem;display:none;}
+
+    /* ── Downloads page ── */
+    #page-downloads h2{color:#ffd600;font-size:1.6rem;font-weight:900;text-align:center;
+      margin-bottom:4px;text-shadow:2px 2px 0 #1b5e20;}
+    .dl-sub{color:#a5d6a7;text-align:center;margin-bottom:16px;font-size:.88rem;}
+    #dl-list{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:0 auto;}
+    .dl-row{background:#2e7d32;border-radius:14px;padding:11px 14px;display:flex;
+      align-items:center;gap:11px;box-shadow:0 3px 10px rgba(0,0,0,.3);}
+    .dl-icon{width:46px;height:46px;border-radius:9px;display:flex;align-items:center;
+      justify-content:center;font-size:1.5rem;flex-shrink:0;}
+    .dl-info{flex:1;min-width:0;}
+    .dl-info strong{color:#fff;font-size:.9rem;display:block;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .dl-info span{color:#a5d6a7;font-size:.78rem;}
+    .dl-btns{display:flex;gap:6px;flex-shrink:0;}
+    .btn-load{background:#ffd600;border:none;border-radius:8px;padding:8px 12px;
+      font-weight:800;color:#1b5e20;cursor:pointer;font-size:.82rem;white-space:nowrap;}
+    .btn-load:hover{background:#ffea00;}
+    .btn-stream-sm{background:rgba(255,255,255,.12);border:none;border-radius:8px;
+      padding:8px 10px;color:#fff;cursor:pointer;font-size:.78rem;white-space:nowrap;}
+    .btn-stream-sm:hover{background:rgba(255,255,255,.22);}
+    .btn-del{background:rgba(239,154,154,.12);border:none;border-radius:8px;
+      padding:8px 9px;color:#ef9a9a;cursor:pointer;font-size:.85rem;}
+    .btn-del:hover{background:rgba(239,154,154,.22);}
+    #no-dl{text-align:center;color:#a5d6a7;padding:50px 20px;font-size:.95rem;line-height:1.9;}
+
+    /* ── Download overlay ── */
+    #dl-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
+      align-items:center;justify-content:center;}
+    #dl-overlay.open{display:flex;}
+    #dl-box{background:#2e7d32;border-radius:20px;padding:34px 38px;text-align:center;
+      width:310px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+    #dl-box h3{color:#ffd600;font-size:1.2rem;font-weight:900;margin-bottom:7px;}
+    #dl-name{color:#fff;font-size:.9rem;margin-bottom:20px;line-height:1.4;}
+    #dl-status{color:#c8e6c9;font-size:.95rem;margin-bottom:5px;}
+    #dl-count{font-size:3.2rem;font-weight:900;color:#ffd600;line-height:1;}
+
+    /* ── Video modal ── */
+    #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:150;
+      align-items:center;justify-content:center;padding:12px;}
+    #modal.open{display:flex;}
+    #modal-inner{background:#1b5e20;border-radius:16px;overflow:hidden;width:100%;
+      max-width:960px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+    #modal-head{background:#2e7d32;display:flex;align-items:center;padding:9px 13px;gap:9px;}
+    #modal-title{color:#ffd600;font-weight:800;font-size:.9rem;flex:1;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    #close-btn{background:#ffd600;border:none;border-radius:50%;width:30px;height:30px;
+      font-size:.85rem;font-weight:900;cursor:pointer;color:#1b5e20;}
+    #close-btn:hover{background:#ffea00;}
+    #vid-wrap{position:relative;aspect-ratio:16/9;background:#000;}
+    #vid-wrap video{position:absolute;inset:0;width:100%;height:100%;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <button id="back-btn" onclick="showPage('home')">&#8592; Episodes</button>
+    <h1>Wombats!</h1>
+    <button id="dl-tab" onclick="showPage('downloads')">
+      &#8595; My Videos <span id="dl-badge"></span>
+    </button>
+  </div>
+  <div class="season-tabs" id="season-tabs" style="display:none">
+    <button class="s-tab active" onclick="selectSeason(1)">Season 1</button>
+    <button class="s-tab"       onclick="selectSeason(2)">Season 2</button>
+  </div>
+  <div class="search-wrap" id="search-wrap" style="display:none">
+    <input id="search" type="text" placeholder="Search by episode name, number (e.g. E05, S01E12)…"/>
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">&#x2715;</button>
+  </div>
+</header>
+
+<div id="page-home" class="page active">
+  <div id="grid"></div>
+  <div id="no-results">No episodes found for that search.</div>
+</div>
+
+<div id="page-downloads" class="page">
+  <h2>My Downloaded Videos</h2>
+  <p class="dl-sub">Watch these anytime, even without internet!</p>
+  <div id="dl-list"></div>
+  <div id="no-dl">No downloads yet!<br>Tap ⬇ on any Season 1 episode to save it.<br><br>
+    <small>Files go to your Downloads folder.<br>Tap 📁 Load File to watch them offline.</small>
+  </div>
+</div>
+
+<div id="modal">
+  <div id="modal-inner">
+    <div id="modal-head">
+      <div id="modal-title"></div>
+      <button id="close-btn">&#x2715;</button>
+    </div>
+    <div id="vid-wrap"><video id="player" controls playsinline></video></div>
+  </div>
+</div>
+
+<div id="dl-overlay">
+  <div id="dl-box">
+    <h3>⬇ Downloading!</h3>
+    <div id="dl-name"></div>
+    <div id="dl-status">File opening in your browser...<br>Going to My Videos in</div>
+    <div id="dl-count"></div>
+  </div>
+</div>
+
+<input type="file" id="file-picker" accept="video/mp4,video/*" style="display:none"/>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────
+// Episode data
+// ─────────────────────────────────────────────────────────────────────────
+const S1_BASE = 'https://archive.org/download/work-it-out-wombats-s-01-e-04-speical-delivery-campout-confusion/';
+const PBS_URL = 'https://pbskids.org/videos/work-it-out-wombats';
+
+const SEASONS = [
+  {
+    num: 1, label: 'Season 1',
+    note: '37 episodes available to download',
+    episodes: [
+      { e:1,  title:"Junior Supers / Measure for Measure",                      file:"Work It Out Wombats! S01E01 - Junior Supers; Measure for Measure.mp4" },
+      { e:2,  title:"Snout Wash Day / A Super Recipe",                           file:"Work It Out Wombats! S01E02 - Snout Wash Day; A Super Recipe.mp4" },
+      { e:3,  title:"Snout and About / Zadie's Shell Shuffle",                   file:"Work It Out Wombats! S01E03 - Snout and About; Zadie's Shell Shuffle.mp4" },
+      { e:4,  title:"Special Delivery / Campout Confusion",                      file:"Work It Out Wombats! S01E04 - Speical Delivery; Campout Confusion.mp4" },
+      { e:5,  title:"The Mighty Zeke / Gift for a Fish",                         file:"Work It Out Wombats! S01E05 - The Mighty Zeke; Gift for a Fish.mp4" },
+      { e:6,  title:"Crab Quakes / Hopping Helpers",                             file:"Work It Out Wombats! S01E06 - Crab Quakes; Hopping Helpers.mp4" },
+      { e:7,  title:"Brother Day / Cafe Chaos",                                  file:"Work It Out Wombats! S01E07 - Brother Day; Cafe Chaos.mp4" },
+      { e:8,  title:"Me Time / Zadie and the Noisy Thing",                       file:"Work It Out Wombats! S01E08 - Me Time; Zadie and the Really Big, Really Loud, Noisy Thing.mp4" },
+      { e:9,  title:"The Sleepover / Secret Tunnels",                            file:"Work It Out Wombats! S01E09 - The Sleepover; Secret Tunnels.mp4" },
+      { e:10, title:"Summerweenie Halloweenie / Make It Snow",                   file:"Work It Out Wombats! S01E10 - Summerweenie Halloweenie; Make It Snow.mp4" },
+      { e:11, title:"Sparkle Pants / Game Changer",                              file:"Work It Out Wombats! S01E11 - Sparkle Pants; Game Changer.mp4" },
+      { e:12, title:"Bake It Til You Make It / Zoom In Zadie",                  file:"Work It Out Wombats! S01E12 - Bake It Til You Make It; Zoom In Zadie.mp4" },
+      { e:13, title:"Helper For the Day / Racecar Wombats",                      file:"Work It Out Wombats! S01E13 - Helper For the Day; Racecar Wombats.mp4" },
+      { e:14, title:"Talent Turmoil / Zeke's Collection Selection",              file:"Work It Out Wombats! S01E14 - Talent Turmoik; Zeke's Collection Selection.mp4" },
+      { e:15, title:"The Treeborhood Photo Album / Runway Recycling",            file:"Work It Out Wombats! S01E15 - The Treeborhood Photo Album; Runway Recyling.mp4" },
+      { e:16, title:"Amazing Adventure / The Kaya-Tastic Halo-Halo Split",      file:"Work It Out Wombats! S01E16 - Amazing Adventure; The Kaya-Tastic Banana-tastic Halo-Halo Split.mp4" },
+      { e:17, title:"A Boxful of Snout / Postcard From Snout",                   file:"Work It Out Wombats! S01E17 - A Boxful of Snout; Postcard From Snout.mp4" },
+      { e:18, title:"3-2-1 Lift-Off! / Moon Magic",                             file:"Work It Out Wombats! S01E18 - 3-2-1 Lift-Off; Moon Magic.mp4" },
+      { e:19, title:"Moo Moo Choo Choo / Lake Bellyflop",                        file:"Work It Out Wombats! S01E19 - Moo Moo Choo Choo; Lake Bellyflop.mp4" },
+      { e:20, title:"JunJun's Wake Up Call / Stack 'Em Up",                      file:"Work It Out Wombats! S01E20 - JunJun's Wake Up Call; Stack 'Em Up.mp4" },
+      { e:21, title:"A Sleep Story for Ellie / Super's Super Mug",               file:"Work It Out Wombats! S01E21 - A Sleep Story for Ellie; Super's Super Mug.mp4" },
+      { e:22, title:"Color Fun / A Super Invention",                             file:"Work It Out Wombats! S01E22 - Color Fun; A Super Invention.mp4" },
+      { e:23, title:"A Room of Our Own / Zeke's Fairy Village",                  file:"Work It Out Wombats! S01E23 - A Room of Our Own; Zeke's Fairy Village.mp4" },
+      { e:24, title:"A House for Snout / JunJun's Brain Freeze",                 file:"Work It Out Wombats! S01E24 - A House for Snout; JunJun's Brain Freeze.mp4" },
+      { e:25, title:"Treeborhood Carnaval / Magic Tricky",                       file:"Work It Out Wombats! S01E25 - Treeborhood Carnaval; Magic Tricky.mp4" },
+      { e:26, title:"Malik Gets Muddy / Balloonasaur Delivery",                  file:"Work It Out Wombats! S01E26 - Malik Gets Muddy; Ballonasaur Delivery.mp4" },
+      { e:27, title:"Sticker Monster Storytime / Count to 10!",                  file:"Work It Out Wombats! S01E27 - Sticker Monster Storytime; Count to 10!.mp4" },
+      { e:28, title:"Zadie to the Rescue / Cake Mistake",                        file:"Work It Out Wombats! S01E28 - Zadie to the Rescue; Cake Mistake.mp4" },
+      { e:29, title:"Yo-Ho-Ho / A Sandwich for Mr. E / Balloonie for Youie",    file:"Work It Out Wombats! S01E29 - Yo-Ho-Ho; A Sandwich for Mr. E; Balloonie for Youie.mp4" },
+      { e:30, title:"Treeborhood Harvest Day / The Thankfulness Stew",           file:"Work It Out Wombats! S01E30 - Treeborhood Harvest Day; The Treeborhood Thankfulness Stew.mp4" },
+      { e:31, title:"Sammy's Primo / Sammy Makes a Day",                         file:"Work It Out Wombats! S01E31 - Sammy's Primo; Sammy Makes a Day.mp4" },
+      { e:32, title:"Patternpalooza / Backwards Day",                            file:"Work It Out Wombats! S01E32 - Patternpalooza; Backwards Day.mp4" },
+      { e:33, title:"The Treeborhood Parranda / Happy New Acorn Year!",          file:"Work It Out Wombats! S01E33 - The Treeborhood Parranda; Happy New Acorn Year!.mp4" },
+      { e:34, title:"Cause and Effect Machine / Riddles of the Treeborhood",     file:"Work It Out Wombats! S01E34 - The Treeborhood Cause and Effect Machine; Riddles of the Treeborhood.mp4" },
+      { e:35, title:"The Great Splendito / The Bike Wash",                       file:"Work It Out Wombats! S01E35 - The Great Splendito; The Bike Wash.mp4" },
+      { e:36, title:"Lost & Found Patrol / Survey Says",                         file:"https://archive.org/download/work-it-out-wombats/Work%20It%20Out%20Wombats%20-%20Lost%20And%20Found%20Patrol.mp4" },
+      { e:37, title:"Tricky Tricky Taiko Drum / Toy Swap Flop",                 file:"Work It Out Wombats! S01E37 - Tricky Tricky Taiiko Drum; Toy Swap Flop.mp4" },
+      { e:38, title:"Ellie's Island / Buckley's Playdate Problem",               file:"https://archive.org/download/work-it-out-wombats/Work%20It%20Out%20Wombats%20-%20Ellie%27s%20Island.mp4" },
+      { e:39, title:"3-2-1 Lift-Off / Moon Magic (alt)",                         file:null },
+      { e:40, title:"The Wombat Family Roadtrip / Super Duper Whirligig",        file:"Work It Out Wombats! S01E40 - The Wombat Family Roadtrip; A Super Duper Wombat Whirligig.mp4" },
+    ]
+  },
+  {
+    num: 2, label: 'Season 2',
+    note: 'Stream on PBS Kids (too new for offline)',
+    episodes: [
+      { e:1,  title:"The Big Loud Storm / Wish Monster" },
+      { e:2,  title:"Without Snout / Remote Out of Control" },
+      { e:3,  title:"Shiny Louisa / Duffy's Slushies" },
+      { e:4,  title:"Overbooked Super / Louisa's Big News" },
+      { e:5,  title:"Cake Day Surprise / A Treeborhood Vacation!" },
+      { e:6,  title:"Flowerhood Photo Hunt / A Stuffie Tea Party" },
+      { e:7,  title:"The Fishman's Big Date / Fishman Family Circus" },
+      { e:8,  title:"The Friendship Day Dance / The Friendship Day Light Show" },
+      { e:9,  title:"Toy Maker / The Mysterious Ruckus" },
+      { e:10, title:"Zadie's Horrible Haircut / A Day Out with Babby" },
+      { e:11, title:"Grandparents Day / Sari-Sari Snack Surprise" },
+      { e:12, title:"Great Uncle Duper's Super Visit / Claydate with Louisa" },
+      { e:13, title:"Welcome to the Treeborhood / Ice Cream Bike" },
+      { e:14, title:"Zeke the Mad Monster / A Taste of Puerto Rico" },
+      { e:15, title:"Sasha's Sing-a-long Playdate / Return of the Hopping Helpers" },
+      { e:16, title:"Costume Fiasco / Tooth on the Loose" },
+      { e:17, title:"Stuffie Rescue / Ball Run Fun" },
+      { e:18, title:"Diwali in the Treeborhood / Sandcastle Success" },
+      { e:19, title:"Bex Splash Fest / Mural Mayhem" },
+      { e:20, title:"Bex & Sammy's New Groove / Sticker Monster Dance Game" },
+      { e:21, title:"The Case of the Missing Key / The Care Package" },
+      { e:22, title:"Hanukkah & The Snowy Day / The Fishman's Menorah" },
+    ]
+  }
+];
+
+const COLORS = ['#2e7d32','#1565c0','#6a1b9a','#e65100','#4e342e','#00695c',
+                 '#c62828','#4527a0','#00838f','#bf360c','#558b2f','#880e4f',
+                 '#1a237e','#33691e','#4a148c','#006064','#b71c1c','#37474f',
+                 '#f57f17','#0d47a1','#1b5e20','#4a148c','#3e2723','#e65100',
+                 '#01579b','#006064','#1a237e','#33691e','#263238','#880e4f',
+                 '#bf360c','#558b2f','#2e7d32','#00695c','#4527a0','#c62828',
+                 '#1565c0','#6a1b9a','#e65100','#4e342e'];
+const EMOJIS = ['🦘','🌳','🎬','🔍','🎮','📋','🚲','✨','🏨','🧸',
+                '⚙️','🥁','🏝️','🎨','🎵','🌟','🍰','🚀','🚂','🐚',
+                '🦋','🎯','🌈','❄️','🎪','🌺','🎭','🎊','🍦','🍂',
+                '🎁','🎠','🎶','🥕','🛸','💫','🌊','🦀','🎃','🏕️'];
+
+// ─────────────────────────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────────────────────────
+let currentSeason = 1;
+let searchQuery   = '';
+
+const STORAGE_KEY = 'wombats_saved_v2';
+function getSaved()      { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }
+function addSaved(k)     { const s=getSaved();if(!s.includes(k)){s.push(k);localStorage.setItem(STORAGE_KEY,JSON.stringify(s));} }
+function delSaved(k)     { localStorage.setItem(STORAGE_KEY,JSON.stringify(getSaved().filter(x=>x!==k))); }
+function isSaved(k)      { return getSaved().includes(k); }
+function epKey(s,e)      { return `S${s}E${e}`; }
+function sleep(ms)       { return new Promise(r=>setTimeout(r,ms)); }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Page switching
+// ─────────────────────────────────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const onHome = name==='home';
+  document.getElementById('back-btn').style.display    = onHome?'none':'flex';
+  document.getElementById('season-tabs').style.display  = onHome?'flex':'none';
+  document.getElementById('search-wrap').style.display  = onHome?'block':'none';
+  if(name==='downloads') renderDownloads();
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Season switching
+// ─────────────────────────────────────────────────────────────────────────
+function selectSeason(n){
+  currentSeason = n;
+  document.querySelectorAll('.s-tab').forEach((t,i)=>{
+    t.classList.toggle('active', i+1===n);
+  });
+  renderGrid();
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Search
+// ─────────────────────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', function(){
+  searchQuery = this.value.trim().toLowerCase();
+  document.getElementById('search-clear').style.display = searchQuery ? 'block' : 'none';
+  renderGrid();
+});
+
+function clearSearch(){
+  document.getElementById('search').value = '';
+  searchQuery = '';
+  document.getElementById('search-clear').style.display = 'none';
+  renderGrid();
+}
+
+function matchesSearch(season, ep){
+  if(!searchQuery) return true;
+  const q = searchQuery;
+  // Match episode ID patterns: e5, e05, s1e5, s01e05, 1x05, etc.
+  const epStr = `s${season.num}e${ep.e}`;
+  const epStr2 = `s${season.num}e${String(ep.e).padStart(2,'0')}`;
+  const simpleE = `e${ep.e}`;
+  const simpleE2 = `e${String(ep.e).padStart(2,'0')}`;
+  const cross = `${season.num}x${String(ep.e).padStart(2,'0')}`;
+  if(epStr.includes(q)||epStr2.includes(q)||simpleE===q||simpleE2===q||cross.includes(q)) return true;
+  // Match title
+  return ep.title.toLowerCase().includes(q);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Render grid
+// ─────────────────────────────────────────────────────────────────────────
+function renderGrid(){
+  const grid   = document.getElementById('grid');
+  const noRes  = document.getElementById('no-results');
+  const season = SEASONS.find(s=>s.num===currentSeason);
+  const saved  = new Set(getSaved());
+  grid.innerHTML = '';
+  let shown = 0;
+
+  season.episodes.forEach((ep,i)=>{
+    if(!matchesSearch(season, ep)) return;
+    shown++;
+    const key     = epKey(season.num, ep.e);
+    const color   = COLORS[i % COLORS.length];
+    const emoji   = EMOJIS[i % EMOJIS.length];
+    const isS2    = season.num===2;
+    const noFile  = !ep.file;
+    const wasSaved= saved.has(key);
+
+    const card = document.createElement('div');
+    card.className = 'card' + (noFile&&!isS2?' unavailable':'');
+    card.dataset.key = key;
+    card.innerHTML = `
+      <div class="card-art" style="background:${color}">
+        ${isS2?'<span class="s2-badge">S2 NEW</span>':''}
+        <span class="ep-badge">S${season.num} · E${String(ep.e).padStart(2,'0')}</span>
+        <span class="ep-emoji">${emoji}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${ep.title}</div>
+        ${noFile&&!isS2 ? '<div class="unavail-label">⚠️ Not in archive</div>' : ''}
+        <div class="card-actions">
+          ${isS2||noFile
+            ? `<button class="btn-watch" onclick="watchOnPBS('${ep.title.replace(/'/g,"\\'")}')">▶ PBS Kids</button>`
+            : `<button class="btn-watch" onclick="streamEp('${key}')">▶ Watch</button>
+               <button class="btn-dl${wasSaved?' saved':''}" title="${wasSaved?'Saved':'Download'}"
+                 onclick="handleDl('${key}',event)">${wasSaved?'✓':'⬇'}</button>`
+          }
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  noRes.style.display = shown===0 ? 'block' : 'none';
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Watch
+// ─────────────────────────────────────────────────────────────────────────
+function streamEp(key){
+  const {season,ep} = findEp(key);
+  if(!season||!ep||!ep.file) return;
+  const url = ep.file.startsWith('http') ? ep.file : S1_BASE + encodeURIComponent(ep.file);
+  openPlayer(ep.title, url);
+}
+
+function watchOnPBS(title){
+  const q = encodeURIComponent(title);
+  window.open(`https://pbskids.org/videos/work-it-out-wombats`, '_blank');
+}
+
+function openPlayer(title, src){
+  document.getElementById('modal-title').textContent = title;
+  const v = document.getElementById('player');
+  v.src = src; v.load(); v.play().catch(()=>{});
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  const v = document.getElementById('player');
+  v.pause();
+  if(v.src.startsWith('blob:')) URL.revokeObjectURL(v.src);
+  v.src = ''; document.body.style.overflow = '';
+}
+document.getElementById('close-btn').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ─────────────────────────────────────────────────────────────────────────
+// Download
+// ─────────────────────────────────────────────────────────────────────────
+async function handleDl(key, event){
+  event.stopPropagation();
+  if(isSaved(key)){ showPage('downloads'); return; }
+  const {ep} = findEp(key);
+  if(!ep||!ep.file) return;
+
+  const url = ep.file.startsWith('http') ? ep.file : S1_BASE + encodeURIComponent(ep.file);
+  const a = document.createElement('a');
+  a.href=url; a.target='_blank'; a.rel='noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+  addSaved(key); updateBadge();
+  const btn = document.querySelector(`.card[data-key="${key}"] .btn-dl`);
+  if(btn){ btn.classList.add('saved'); btn.textContent='✓'; btn.title='Saved!'; }
+
+  document.getElementById('dl-name').textContent = ep.title;
+  document.getElementById('dl-count').textContent = '5';
+  document.getElementById('dl-overlay').classList.add('open');
+  for(let i=5;i>=1;i--){ document.getElementById('dl-count').textContent=i; await sleep(1000); }
+  document.getElementById('dl-overlay').classList.remove('open');
+  showPage('downloads');
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Downloads page
+// ─────────────────────────────────────────────────────────────────────────
+function renderDownloads(){
+  const saved = getSaved();
+  const list  = document.getElementById('dl-list');
+  const empty = document.getElementById('no-dl');
+  list.innerHTML = '';
+  if(!saved.length){ empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  saved.forEach(key=>{
+    const {season,ep,idx} = findEp(key);
+    if(!ep) return;
+    const color = COLORS[idx%COLORS.length];
+    const emoji = EMOJIS[idx%EMOJIS.length];
+    const row = document.createElement('div');
+    row.className='dl-row';
+    row.innerHTML=`
+      <div class="dl-icon" style="background:${color}">${emoji}</div>
+      <div class="dl-info">
+        <strong>${ep.title}</strong>
+        <span>S${season.num} E${String(ep.e).padStart(2,'0')} · saved to Downloads</span>
+      </div>
+      <div class="dl-btns">
+        <button class="btn-load" onclick="loadFile('${key}')">📁 Load File</button>
+        <button class="btn-stream-sm" onclick="streamEp('${key}')">▶ Stream</button>
+        <button class="btn-del" onclick="removeDl('${key}')">🗑</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function removeDl(key){
+  const {ep}=findEp(key);
+  if(!confirm(`Remove "${ep?.title||key}" from My Videos?\n(Won't delete the file from your Downloads folder.)`)) return;
+  delSaved(key);
+  const btn = document.querySelector(`.card[data-key="${key}"] .btn-dl`);
+  if(btn){ btn.classList.remove('saved'); btn.textContent='⬇'; btn.title='Download'; }
+  updateBadge(); renderDownloads();
+}
+
+function loadFile(key){
+  const {ep}=findEp(key);
+  const picker=document.getElementById('file-picker');
+  picker.onchange=()=>{
+    const f=picker.files[0]; if(!f) return;
+    openPlayer(ep?.title||key, URL.createObjectURL(f));
+    picker.value='';
+  };
+  picker.click();
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────
+function findEp(key){
+  // key = "S1E5" or "S2E3"
+  const m = key.match(/^S(\d+)E(\d+)$/);
+  if(!m) return {};
+  const sNum=parseInt(m[1]), eNum=parseInt(m[2]);
+  const season=SEASONS.find(s=>s.num===sNum);
+  if(!season) return {};
+  const idx=season.episodes.findIndex(e=>e.e===eNum);
+  return { season, ep:season.episodes[idx], idx };
+}
+
+function updateBadge(){
+  const n=getSaved().length;
+  const b=document.getElementById('dl-badge');
+  b.textContent=n; b.style.display=n>0?'flex':'none';
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────────────────
+showPage('home');
+updateBadge();
+renderGrid();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/WombatsApp/sw.js');
+}
+</script>
+</body>
+</html>
