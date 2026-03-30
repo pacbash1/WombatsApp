@@ -189,7 +189,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Episode data
 // ─────────────────────────────────────────────────────────────────────────
-const S1_BASE = 'https://archive.org/download/work-it-out-wombats-s-01-e-04-speical-delivery-campout-confusion/';
+const S1_BASE = 'https://pacbash1.github.io/WombatsApp/Episodes/';
 const PBS_URL = 'https://pbskids.org/videos/work-it-out-wombats';
 
 const SEASONS = [
@@ -211,32 +211,32 @@ const SEASONS = [
       { e:12, title:"Bake It Til You Make It / Zoom In Zadie",                  file:"Work It Out Wombats! S01E12 - Bake It Til You Make It; Zoom In Zadie.mp4" },
       { e:13, title:"Helper For the Day / Racecar Wombats",                      file:"Work It Out Wombats! S01E13 - Helper For the Day; Racecar Wombats.mp4" },
       { e:14, title:"Talent Turmoil / Zeke's Collection Selection",              file:"Work It Out Wombats! S01E14 - Talent Turmoik; Zeke's Collection Selection.mp4" },
-      { e:15, title:"The Treeborhood Photo Album / Runway Recycling",            file:"Work It Out Wombats! S01E15 - The Treeborhood Photo Album; Runway Recyling.mp4" },
-      { e:16, title:"Amazing Adventure / The Kaya-Tastic Halo-Halo Split",      file:"Work It Out Wombats! S01E16 - Amazing Adventure; The Kaya-Tastic Banana-tastic Halo-Halo Split.mp4" },
+      { e:15, title:"The Treeborhood Photo Album / Runway Recycling",            file:"Work It Out Wombats! S01E15 - The Treeborhood Photo Album; Runway Recyling (1).mp4" },
+      { e:16, title:"Amazing Adventure / The Kaya-Tastic Halo-Halo Split",      file:null },
       { e:17, title:"A Boxful of Snout / Postcard From Snout",                   file:"Work It Out Wombats! S01E17 - A Boxful of Snout; Postcard From Snout.mp4" },
       { e:18, title:"3-2-1 Lift-Off! / Moon Magic",                             file:"Work It Out Wombats! S01E18 - 3-2-1 Lift-Off; Moon Magic.mp4" },
       { e:19, title:"Moo Moo Choo Choo / Lake Bellyflop",                        file:"Work It Out Wombats! S01E19 - Moo Moo Choo Choo; Lake Bellyflop.mp4" },
       { e:20, title:"JunJun's Wake Up Call / Stack 'Em Up",                      file:"Work It Out Wombats! S01E20 - JunJun's Wake Up Call; Stack 'Em Up.mp4" },
       { e:21, title:"A Sleep Story for Ellie / Super's Super Mug",               file:"Work It Out Wombats! S01E21 - A Sleep Story for Ellie; Super's Super Mug.mp4" },
       { e:22, title:"Color Fun / A Super Invention",                             file:"Work It Out Wombats! S01E22 - Color Fun; A Super Invention.mp4" },
-      { e:23, title:"A Room of Our Own / Zeke's Fairy Village",                  file:"Work It Out Wombats! S01E23 - A Room of Our Own; Zeke's Fairy Village.mp4" },
-      { e:24, title:"A House for Snout / JunJun's Brain Freeze",                 file:"Work It Out Wombats! S01E24 - A House for Snout; JunJun's Brain Freeze.mp4" },
+      { e:23, title:"A Room of Our Own / Zeke's Fairy Village",                  file:null },
+      { e:24, title:"A House for Snout / JunJun's Brain Freeze",                 file:null },
       { e:25, title:"Treeborhood Carnaval / Magic Tricky",                       file:"Work It Out Wombats! S01E25 - Treeborhood Carnaval; Magic Tricky.mp4" },
-      { e:26, title:"Malik Gets Muddy / Balloonasaur Delivery",                  file:"Work It Out Wombats! S01E26 - Malik Gets Muddy; Ballonasaur Delivery.mp4" },
-      { e:27, title:"Sticker Monster Storytime / Count to 10!",                  file:"Work It Out Wombats! S01E27 - Sticker Monster Storytime; Count to 10!.mp4" },
-      { e:28, title:"Zadie to the Rescue / Cake Mistake",                        file:"Work It Out Wombats! S01E28 - Zadie to the Rescue; Cake Mistake.mp4" },
-      { e:29, title:"Yo-Ho-Ho / A Sandwich for Mr. E / Balloonie for Youie",    file:"Work It Out Wombats! S01E29 - Yo-Ho-Ho; A Sandwich for Mr. E; Balloonie for Youie.mp4" },
+      { e:26, title:"Malik Gets Muddy / Balloonasaur Delivery",                  file:null },
+      { e:27, title:"Sticker Monster Storytime / Count to 10!",                  file:null },
+      { e:28, title:"Zadie to the Rescue / Cake Mistake",                        file:null },
+      { e:29, title:"Yo-Ho-Ho / A Sandwich for Mr. E / Balloonie for Youie",    file:null },
       { e:30, title:"Treeborhood Harvest Day / The Thankfulness Stew",           file:"Work It Out Wombats! S01E30 - Treeborhood Harvest Day; The Treeborhood Thankfulness Stew.mp4" },
-      { e:31, title:"Sammy's Primo / Sammy Makes a Day",                         file:"Work It Out Wombats! S01E31 - Sammy's Primo; Sammy Makes a Day.mp4" },
-      { e:32, title:"Patternpalooza / Backwards Day",                            file:"Work It Out Wombats! S01E32 - Patternpalooza; Backwards Day.mp4" },
+      { e:31, title:"Sammy's Primo / Sammy Makes a Day",                         file:null },
+      { e:32, title:"Patternpalooza / Backwards Day",                            file:null },
       { e:33, title:"The Treeborhood Parranda / Happy New Acorn Year!",          file:"Work It Out Wombats! S01E33 - The Treeborhood Parranda; Happy New Acorn Year!.mp4" },
-      { e:34, title:"Cause and Effect Machine / Riddles of the Treeborhood",     file:"Work It Out Wombats! S01E34 - The Treeborhood Cause and Effect Machine; Riddles of the Treeborhood.mp4" },
-      { e:35, title:"The Great Splendito / The Bike Wash",                       file:"Work It Out Wombats! S01E35 - The Great Splendito; The Bike Wash.mp4" },
-      { e:36, title:"Lost & Found Patrol / Survey Says",                         file:"https://archive.org/download/work-it-out-wombats/Work%20It%20Out%20Wombats%20-%20Lost%20And%20Found%20Patrol.mp4" },
-      { e:37, title:"Tricky Tricky Taiko Drum / Toy Swap Flop",                 file:"Work It Out Wombats! S01E37 - Tricky Tricky Taiiko Drum; Toy Swap Flop.mp4" },
-      { e:38, title:"Ellie's Island / Buckley's Playdate Problem",               file:"https://archive.org/download/work-it-out-wombats/Work%20It%20Out%20Wombats%20-%20Ellie%27s%20Island.mp4" },
-      { e:39, title:"3-2-1 Lift-Off / Moon Magic (alt)",                         file:null },
-      { e:40, title:"The Wombat Family Roadtrip / Super Duper Whirligig",        file:"Work It Out Wombats! S01E40 - The Wombat Family Roadtrip; A Super Duper Wombat Whirligig.mp4" },
+      { e:34, title:"Cause and Effect Machine / Riddles of the Treeborhood",     file:"Work It Out Wombats - Riddles Of The Treeborhood.mp4" },
+      { e:35, title:"The Great Splendito / The Bike Wash",                       file:"Work It Out Wombats - The Bike Wash.mp4" },
+      { e:36, title:"Lost & Found Patrol / Survey Says",                         file:"Work It Out Wombats - Lost And Found Patrol.mp4" },
+      { e:37, title:"Tricky Tricky Taiko Drum / Toy Swap Flop",                 file:"Work It Out Wombats - Tricky Tricky Taiko Drum.mp4" },
+      { e:38, title:"Ellie's Island / Buckley's Playdate Problem",               file:"Work It Out Wombats - Ellie's Island.mp4" },
+      { e:39, title:"The Lakeview Hotel / Louisa's Home Movie",                  file:"Work It Out Wombats - The Lakeview Hotel.mp4" },
+      { e:40, title:"The Wombat Family Roadtrip / Super Duper Whirligig",        file:null },
     ]
   },
   {
