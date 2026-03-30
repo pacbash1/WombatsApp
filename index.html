@@ -507,7 +507,7 @@ function renderArchive(){
     };
 
     const url1 = S1_BASE + encodeURIComponent(ep.file);
-    makeCard(parts[0] || ep.title, url1, `S1 · E${String(ep.e).padStart(2,'0')}`);
+    makeCard(ep.file2 ? (parts[0] || ep.title) : ep.title, url1, `S1 · E${String(ep.e).padStart(2,'0')}`);
 
     if(ep.file2){
       const url2 = S1_BASE + encodeURIComponent(ep.file2);
