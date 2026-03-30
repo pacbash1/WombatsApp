@@ -26,6 +26,10 @@
       font-size:.82rem;font-weight:800;color:#1b5e20;cursor:pointer;
       display:flex;align-items:center;gap:5px;white-space:nowrap;}
     #dl-tab:hover{background:#ffea00;}
+    #archive-tab{background:rgba(255,255,255,.15);border:none;border-radius:10px;padding:7px 11px;
+      font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;white-space:nowrap;}
+    #archive-tab:hover{background:rgba(255,255,255,.25);}
+    .header-btns{display:flex;gap:6px;align-items:center;}
     #dl-badge{background:#e53935;color:#fff;border-radius:50%;width:18px;height:18px;
       font-size:.7rem;display:none;align-items:center;justify-content:center;font-weight:900;}
 
@@ -136,9 +140,12 @@
   <div class="header-top">
     <button id="back-btn" onclick="showPage('home')">&#8592; Episodes</button>
     <h1>Wombats!</h1>
-    <button id="dl-tab" onclick="showPage('downloads')">
-      &#8595; My Videos <span id="dl-badge"></span>
-    </button>
+    <div class="header-btns">
+      <button id="archive-tab" onclick="showPage('archive')">&#127749; Archive</button>
+      <button id="dl-tab" onclick="showPage('downloads')">
+        &#8595; My Videos <span id="dl-badge"></span>
+      </button>
+    </div>
   </div>
   <div class="season-tabs" id="season-tabs" style="display:none">
     <button class="s-tab active" onclick="selectSeason(1)">Season 1</button>
@@ -153,6 +160,12 @@
 <div id="page-home" class="page active">
   <div id="grid"></div>
   <div id="no-results">No episodes found for that search.</div>
+</div>
+
+<div id="page-archive" class="page">
+  <h2 style="color:#ffd600;font-size:1.6rem;font-weight:900;text-align:center;margin-bottom:4px;text-shadow:2px 2px 0 #1b5e20;">Archive</h2>
+  <p style="color:#a5d6a7;text-align:center;margin-bottom:16px;font-size:.88rem;">All available episodes</p>
+  <div id="archive-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding:0 0 14px;"></div>
 </div>
 
 <div id="page-downloads" class="page">
@@ -189,7 +202,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Episode data
 // ─────────────────────────────────────────────────────────────────────────
-const S1_BASE = 'https://pacbash1.github.io/WombatsApp/Episodes/';
+const S1_BASE = 'https://archive.org/download/work-it-out-wombats-ellies-island/';
 const PBS_URL = 'https://pbskids.org/videos/work-it-out-wombats';
 
 const SEASONS = [
@@ -306,6 +319,7 @@ function showPage(name){
   document.getElementById('season-tabs').style.display  = onHome?'flex':'none';
   document.getElementById('search-wrap').style.display  = onHome?'block':'none';
   if(name==='downloads') renderDownloads();
+  if(name==='archive') renderArchive();
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -415,7 +429,8 @@ function watchOnPBS(title){
 function openPlayer(title, src){
   document.getElementById('modal-title').textContent = title;
   const v = document.getElementById('player');
-  v.src = src; v.load(); v.play().catch(()=>{});
+  v.src = src; v.load();
+  v.addEventListener('canplay', () => v.play().catch(()=>{}), {once:true});
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -455,6 +470,36 @@ async function handleDl(key, event){
   for(let i=5;i>=1;i--){ document.getElementById('dl-count').textContent=i; await sleep(1000); }
   document.getElementById('dl-overlay').classList.remove('open');
   showPage('downloads');
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────
+// Archive page
+// ─────────────────────────────────────────────────────────────────────────
+function renderArchive(){
+  const grid = document.getElementById('archive-grid');
+  grid.innerHTML = '';
+  SEASONS[0].episodes.forEach((ep, i) => {
+    if(!ep.file) return;
+    const key   = epKey(1, ep.e);
+    const color = COLORS[i % COLORS.length];
+    const emoji = EMOJIS[i % EMOJIS.length];
+    const card  = document.createElement('div');
+    card.className = 'card';
+    card.dataset.key = key;
+    card.innerHTML = `
+      <div class="card-art" style="background:${color}">
+        <span class="ep-badge">S1 · E${String(ep.e).padStart(2,'0')}</span>
+        <span class="ep-emoji">${emoji}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${ep.title}</div>
+        <div class="card-actions">
+          <button class="btn-watch" onclick="streamEp('${key}')">&#9654; Watch</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────
