@@ -243,12 +243,12 @@ const SEASONS = [
       { e:31, title:"Sammy's Primo / Sammy Makes a Day",                         file:null },
       { e:32, title:"Patternpalooza / Backwards Day",                            file:null },
       { e:33, title:"The Treeborhood Parranda / Happy New Acorn Year!",          file:"Work It Out Wombats! S01E33 - The Treeborhood Parranda; Happy New Acorn Year!.mp4" },
-      { e:34, title:"Cause and Effect Machine / Riddles of the Treeborhood",     file:"Work It Out Wombats - Riddles Of The Treeborhood.mp4" },
-      { e:35, title:"The Great Splendito / The Bike Wash",                       file:"Work It Out Wombats - The Bike Wash.mp4" },
-      { e:36, title:"Lost & Found Patrol / Survey Says",                         file:"Work It Out Wombats - Lost And Found Patrol.mp4" },
-      { e:37, title:"Tricky Tricky Taiko Drum / Toy Swap Flop",                 file:"Work It Out Wombats - Tricky Tricky Taiko Drum.mp4" },
-      { e:38, title:"Ellie's Island / Buckley's Playdate Problem",               file:"Work It Out Wombats - Ellie's Island.mp4" },
-      { e:39, title:"The Lakeview Hotel / Louisa's Home Movie",                  file:"Work It Out Wombats - The Lakeview Hotel.mp4" },
+      { e:34, title:"Cause and Effect Machine / Riddles of the Treeborhood",     file:"Work It Out Wombats - Riddles Of The Treeborhood.mp4",       file2:"Work It Out Wombats - Treeborhood Cause & Effect Machine.mp4" },
+      { e:35, title:"The Great Splendito / The Bike Wash",                       file:"Work It Out Wombats - The Bike Wash.mp4",                    file2:"Work It Out Wombats - The Great Splendito.mp4" },
+      { e:36, title:"Lost & Found Patrol / Survey Says",                         file:"Work It Out Wombats - Lost And Found Patrol.mp4",            file2:"Work It Out Wombats - Survey Says.mp4" },
+      { e:37, title:"Tricky Tricky Taiko Drum / Toy Swap Flop",                 file:"Work It Out Wombats - Tricky Tricky Taiko Drum.mp4",         file2:"Work It Out Wombats - Toy Swap Flop.mp4" },
+      { e:38, title:"Ellie's Island / Buckley's Playdate Problem",               file:"Work It Out Wombats - Ellie's Island.mp4",                   file2:"Work It Out Wombats - Playdate Problem.mp4" },
+      { e:39, title:"The Lakeview Hotel / Louisa's Home Movie",                  file:"Work It Out Wombats - The Lakeview Hotel.mp4",               file2:"Work It Out Wombats - Louisa's Home Movie.mp4" },
       { e:40, title:"The Wombat Family Roadtrip / Super Duper Whirligig",        file:null },
     ]
   },
@@ -484,21 +484,34 @@ function renderArchive(){
     const key   = epKey(1, ep.e);
     const color = COLORS[i % COLORS.length];
     const emoji = EMOJIS[i % EMOJIS.length];
-    const card  = document.createElement('div');
-    card.className = 'card';
-    card.dataset.key = key;
-    card.innerHTML = `
-      <div class="card-art" style="background:${color}">
-        <span class="ep-badge">S1 · E${String(ep.e).padStart(2,'0')}</span>
-        <span class="ep-emoji">${emoji}</span>
-      </div>
-      <div class="card-body">
-        <div class="card-title">${ep.title}</div>
-        <div class="card-actions">
-          <button class="btn-watch" onclick="streamEp('${key}')">&#9654; Watch</button>
+    const parts = ep.title.split(' / ');
+
+    const makeCard = (title, url, badge) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const safeUrl = url.replace(/'/g, "\\'");
+      const safeTitle = title.replace(/'/g, "\\'");
+      card.innerHTML = `
+        <div class="card-art" style="background:${color}">
+          <span class="ep-badge">${badge}</span>
+          <span class="ep-emoji">${emoji}</span>
         </div>
-      </div>`;
-    grid.appendChild(card);
+        <div class="card-body">
+          <div class="card-title">${title}</div>
+          <div class="card-actions">
+            <button class="btn-watch" onclick="openPlayer('${safeTitle}','${safeUrl}')">&#9654; Watch</button>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    };
+
+    const url1 = S1_BASE + encodeURIComponent(ep.file);
+    makeCard(parts[0] || ep.title, url1, `S1 · E${String(ep.e).padStart(2,'0')}`);
+
+    if(ep.file2){
+      const url2 = S1_BASE + encodeURIComponent(ep.file2);
+      makeCard(parts[1] || ep.title, url2, `S1 · E${String(ep.e).padStart(2,'0')}b`);
+    }
   });
 }
 
