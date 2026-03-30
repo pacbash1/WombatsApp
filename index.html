@@ -431,6 +431,7 @@ function openPlayer(title, src){
   const v = document.getElementById('player');
   v.src = src; v.load();
   v.addEventListener('canplay', () => v.play().catch(()=>{}), {once:true});
+  v.addEventListener('error', () => { closeModal(); window.open(src, '_blank'); }, {once:true});
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
